@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html lang="es">
+
+<head>
+	<title>Chat</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+	<header>
+		<h1>Mi chat en php</h1>
+	</header>
+	<main>
+		<nav id=contactos>
+			<li>Paco</li>
+			<li>Pepe</li>
+			<li>Juan</li>
+			<li>Jaime</li>
+			<li>Ana</li>
+		</nav>
+		<div id="chat">
+			<div id="nombre">Nombre aleatoro</div>
+			<div id="conversacion">
+			<div class="send">Enviado por mi</div>
+			<div class="get">Recivido por mi</div>
+
+			</div>
+			<form action="php/process.php" method="POST" id="send">
+				<input type="text" id="mensaje">
+				<input type="submit" value="Enviar">
+			</form>
+		</div>
+	</main>
+</body>
+<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="js/class.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+
+</html>
