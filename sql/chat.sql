@@ -6,8 +6,8 @@ CREATE TABLE users (
 	name varchar(50),
 	lastname varchar(100),
 	cours int(1),
-	nick varchar(50) not null,
-	mail varchar(50) not null,
+	nick varchar(50) not null UNIQUE,
+	mail varchar(50) not null UNIQUE,
 	psswrd varchar(50) not null
 );
 
