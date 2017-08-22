@@ -18,7 +18,9 @@ class User {
 	*    -3: No coincide la contraseña para el usuario
 	*    -4: En el registro, hay campos obligatorios vacios
 	*    -5: Las contraseñas no coinciden
-	*    -6 Ha habido un fallo al hacer el registro
+	*    -6: El nick ya está registrado
+	*    -7: El mail ya está registrado
+	*    -8: Fallo en el registro
 	*--------------------EXITO--------------------------------
 	*     1: Login correcto
 	*     2: Nuevo usuario creado
@@ -32,23 +34,42 @@ class User {
 	private function makeQuery($toMake, $table, $vals) {
 		$query = '(';
 		$filds = '(';
-		$values = ''; 
+		$values = '('; 
 		foreach ($vals as $key => $value) {
-			$fils .= "$key, ";
+			$filds .= "$key, ";
 			$values .= "$value, ";
 		}
-		$fils .= ")";
-		$values .= ")";
+		$vals = explode(', ', $values);
+		$filds = explode(', ', $filds);
+		array_pop($vals);
+		array_pop($filds);
+		$vals = join(", ", $vals);
+		$filds = join(", ", $filds);
+		$filds .= ")";
+		$vals .= ")";
 
 		switch ($toMake) {
 			case 'insert':
-				$query = "INSERT INTO $table $fils VALUES $values";
+				$query = "INSERT INTO $table $filds VALUES $vals";
 				break;			
 			default:
-				# code...
+				echo $toMake;
 				break;
 		}
 		return $query;
+	}
+
+	private function checkIsLogin($query, $nick, $mail) {
+		$check =  mysqli_query($this->sql, $query);
+		$names = [];
+		$mails = [];
+		while ($fila = mysqli_fetch_assoc($check)) {
+			$names[] = $fila['nick'];
+			$mails[] = $fila['mail'];
+		}
+		if (in_array($nick, $names)) return -6;
+		if (in_array($mail, $mails)) return -7;
+		return -8;
 	}
 
 	
@@ -75,11 +96,16 @@ class User {
 	}
 
 
-	public function newUser($name, $lastname, $nick, $cours, $mail, $pssword1, $pssword2){
-		if ($nick == '' || $pssword1 == '' || $psswrd2 == '' || $mail == '') return -4;
-		if ($pssword1 !== $psswrd2) return -5;
-		$userName = mysqli_real_escape_string($this->sql, $userName);
-		$mail = mysqli_real_escape_string($this->sql, $mail);
+	//public function newUser($name, $lastname, $nick, $cours, $mail, $pssword1, $pssword2){
+	public function newUser($data){
+		if ($data['nick'] == '' || $data['pssword1'] == '' || $data['pssword2'] == '' || $data['mail'] == '') return -4;
+		if ($data['pssword1'] !== $data['pssword2']) return -5;
+		$name = mysqli_real_escape_string($this->sql, $data['name']);
+		$lastname = mysqli_real_escape_string($this->sql, $data['lastname']);
+		$nick = mysqli_real_escape_string($this->sql, $data['nick']);
+		$mail = mysqli_real_escape_string($this->sql, $data['mail']);
+		$psswrd = password_hash(mysqli_real_escape_string($this->sql, $data['pssword1']), PASSWORD_BCRYPT, ['cost' => 12]);
+		$cours = mysqli_real_escape_string($this->sql, $data['cours']);
 		$vals = [
 			'name' => "'$name'",
 			'lastname' => "'$lastname'",
@@ -88,15 +114,19 @@ class User {
 			'mail' => "'$mail'", 
 			'psswrd' => "'$psswrd'"
 			];
-
+		
 		$query = $this->makeQuery('insert', 'users', $vals);
-		return  (mysqli_query($sql, $query)) ? 2 : -6;
+		if (mysqli_query($this->sql, $query)) return "2" ;
+		//Comprobamos si existe el nombre o el mail en la bbdd o si el error es por otro motivo
+		$query = "SELECT nick, mail from users where mail='$mail' or nick='$nick'";
+		return $this->checkIsLogin($query, $nick, $mail);
+		
+		//return  (mysqli_query($this->sql, $query)) ? "2" : "-6";
 	}
 
 
 }
-echo "todo correcto";
-$u = new User();
+
 
 
 

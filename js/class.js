@@ -1,5 +1,6 @@
 'use strict'
 
+var log = console.log
 class Chat {
 	constructor(name) {
 		/*
@@ -27,7 +28,7 @@ class Login {
 
 	constructor(method = '') {
 		this.method = method;
-		this.formPage = 'php/login.php';
+		this.formPage = 'php/proccess.php';
 		$('#loginPage form').css('display', 'none');
 		if (this.method == '') return;
 		this.form = $('#' + this.method);
@@ -43,8 +44,14 @@ class Login {
 	// signin(name, lastName, nick, pssword, mail, cours) {
 	sendForm(data) {
 		$.post(this.formPage, {'fun': this.method, 'data': data})
-		.done(processData())
-		.fail(processData(0));
+		.done(function(d){console.log(d)})
+		.fail(function(a, b ,c){
+			console.log(a);
+			console.log(b);
+			console.log(c);
+			console.log('d')
+		});
+		//.fail(processData(0));
 	}
 }
 
