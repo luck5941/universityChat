@@ -6,6 +6,17 @@ var message = $('input#mensaje');
 var messages = $('#conversacion');
 var php = "php/process.php" 
 var chatName = "";
+//----------------------------------------
+var log = console.log
+var socket = new WebSocket("ws://127.0.0.1:10000/serverSocket.php");
+socket.onopen = function(evt) { log('conexion establecida'); }; //on open event
+socket.onclose = function(evt) { log('conexion cerrada'); }; //on close event
+socket.onmessage = function(evt) { /* do stuff */ }; //on message event
+socket.onerror = function(evt) { /* do stuff */ }; //on error event
+//socket.send("message"); //send method
+//socket.close();
+
+//----------------------------------------------
 
 contact.click(function() {
 	chatName = $(this).text()
