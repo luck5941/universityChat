@@ -6,18 +6,13 @@ var message = $('input#mensaje');
 var messages = $('#conversacion');
 var php = "php/process.php" 
 var chatName = "";
-var port = 10001;
-var host = "127.0.0.1";
 //----------------------------------------
 var log = console.log
-var con = "ws://"+host+":"+port+'/serverSocket.py';
-var socket = new WebSocket(con);
+var socket = new WebSocket("ws://127.0.0.1:10001/serverSocket.py");
 socket.onopen = function(evt) { log('conexion establecida'); }; //on open event
-socket.onclose = function(evt) { log('conexion cerrada'); log(evt)}; //on close event
-socket.onmessage = function(evt) { 
-	log(evt)
-}; //on message event
-socket.onerror = function(evt) { log(evt) }; //on error event
+socket.onclose = function(evt) { log('conexion cerrada'); }; //on close event
+socket.onmessage = function(evt) { /* do stuff */ }; //on message event
+socket.onerror = function(evt) { /* do stuff */ }; //on error event
 //socket.send("message"); //send method
 //socket.close();
 

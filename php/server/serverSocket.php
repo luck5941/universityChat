@@ -32,11 +32,34 @@ while(true) {
 	if ($socketSelect <1) continue;
 	$msgsock = socket_accept($sock);
 	$clients[] = $msgsock;	
-	echo "Se ha añadido un nuevo cliente con la clave: ". (count($clients) - 1);
-
+	echo "Se ha añadido un nuevo cliente con la clave: ". (count($clients) - 1) . "\n";
+	$header = socket_read($msgsock, 1024);
+	perform_handshaking($header, $msgsock);
 
 }
 
+function perform_handshaking($receved_header, $msgsock){
+	global $host, $port;
+	$headers = array();
+	$lines = preg_split("/\r\n/", $receved_header);
+	foreach($lines as $line){
+		$line = chop($line);
+		if(preg_match('/\A(\S+): (.*)\z/', $line, $matches)){
+			$headers[$matches[1]] = $matches[2];
+		}
+	}
+
+	$secKey = $headers['Sec-WebSocket-Key'];
+	$secAccept = base64_encode(pack('H*', sha1($secKey . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')));
+	//hand shaking header
+	$upgrade  = "HTTP/1.1 101 Web Socket Protocol Handshake\r\n" .
+	"Upgrade: websocket\r\n" .
+	"Connection: Upgrade\r\n" .
+	"WebSocket-Origin: $host\r\n" .
+	"WebSocket-Location: ws://$host:$port/demo/shout.php\r\n".
+	"Sec-WebSocket-Accept:$secAccept\r\n\r\n";
+	socket_write($msgsock,$upgrade,strlen($upgrade));
+}
 
 
 

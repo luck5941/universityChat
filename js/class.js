@@ -11,6 +11,7 @@ class Chat {
 	}
 
 	sendMessage(msg) {
+		/*
 		console.log(msg)
 		$.post(this.file, { 'fun': "enviar", "msg": msg, "name": this.name })
 			.done(function(d) {
@@ -21,6 +22,14 @@ class Chat {
 				console.log(status);
 				console.log(error);
 			})
+		*/
+		log(msg)
+		log(msg.length)
+		var m = {};
+		m['msg'] = msg
+		m = JSON.stringify(m)
+		log(msg)
+		socket.send(msg)
 	}
 }
 
